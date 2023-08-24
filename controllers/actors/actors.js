@@ -1,0 +1,76 @@
+export default [{
+    "adult": false,
+    "also_known_as": [
+    "Lily Jayne Sullivan",
+    "リリー・サリバン"
+],
+    "biography": "Lily Sullivan is an Australian actress. She played Coral in the 2012 film Mental, and Miranda in the 2018 television series Picnic at Hanging Rock. She plays leading roles in two 2023 feature films, Australian sci-fi thriller Monolith, and American horror film Evil Dead Rise.",
+    "birthday": "1994-09-08",
+    "deathday": null,
+    "gender": 1,
+    "homepage": null,
+    "id": 1186659,
+    "imdb_id": "nm4591498",
+    "known_for_department": "Acting",
+    "name": "Lily Sullivan",
+    "place_of_birth": "Australia",
+    "popularity": 20.332,
+    "profile_path": "/sLjxpxV2JX8k3k9VWoIPrzqlh5J.jpg"
+},
+    {
+        "adult": false,
+        "also_known_as": [
+            "Киллиан Мерфи",
+            "คิลเลียน เมอร์ฟี",
+            "キリアン・マーフィー",
+            "基利安·墨菲",
+            "킬리언 머피",
+            "كيليان مورفي",
+            "希里安·墨菲",
+            "کیلین مورفی",
+            "Кілліан Мерфі",
+            "基里安·墨菲"
+        ],
+        "biography": "Cillian Murphy is an Irish film and theatre actor. He is often noted by critics for his chameleonic performances in diverse roles and distinctive blue eyes. A native of Cork, Murphy began his performing career as a rock musician. After turning down a record deal, he made his professional acting debut in the play Disco Pigs in 1996. He went on to star in Irish and UK film and stage productions throughout the late 1990s and early 2000s, first coming to international attention in 2003 as the hero in the post-apocalyptic film 28 Days Later.\n\nMurphy is best known for his work with director Christopher Nolan, where he appeared as the villain Jonathan Crane/Scarecrow in all three films in the Dark Knight trilogy. Murphy has also worked with Nolan on Inception and Dunkirk. In 2013, Murphy started working on a TV show for BBC titled “Peaky Blinders” as the show’s lead role, Thomas Shelby. The show is still airing as of 2020 with five highly critically acclaimed seasons under its belt A resident of London since 2001, Murphy often works in or near the city and has expressed no desire to move to Hollywood. Uncomfortable on the celebrity circuit, he customarily gives interviews about his work, but does not appear on television talk shows or discuss details of his private life with the press.\n\nBorn in Douglas and raised in Ballintemple, two suburbs of Cork, Cillian Murphy is the eldest of four children. His father, Brendan, works for the Irish Department of Education and his mother is a French teacher. Not only are his parents educators, but his aunts and uncles are also teachers, as was his grandfather. Musicianship also runs in the family, and Murphy started playing music and writing songs at age ten. In mid-2004, Murphy married his long-time live-in girlfriend, Yvonne McGuinness, an artist whom he met in 1996 at one of his rock band's shows. The couple live in northwest London with their two sons Malachy (born in 2005) and Aaron (born in 2007).\n\nMurphy is known for being reluctant to speak about his personal life. He frequently gives interviews about his work but did not appear on a single live TV chat show, where actors customarily share information about their private lives, until 2010, when he was a guest on The Late Late Show on Ireland's RTÉ to promote Perrier's Bounty. He does not have a stylist or a personal publicist, travels without an entourage, and often attends premieres alone. Shy and private, Murphy professes a lack of interest in the celebrity scene, finding the red carpet experience \"a challenge... and not one I want to overcome.\" He intentionally practices a lifestyle that will not interest the tabloids: \"I haven't created any controversy, I don't sleep around, I don't go and fall down drunk.\" Murphy is friends with fellow Irish actors Colin Farrell and Liam Neeson, looking up to the latter like a \"surrogate movie dad\". But primarily, Murphy's close friendships are those he made before becoming a star.",
+        "birthday": "1976-05-25",
+        "deathday": null,
+        "gender": 2,
+        "homepage": null,
+        "id": 2037,
+        "imdb_id": "nm0614165",
+        "known_for_department": "Acting",
+        "name": "Cillian Murphy",
+        "place_of_birth": "Douglas, Cork, Ireland",
+        "popularity": 137.509,
+        "profile_path": "/llkbyWKwpfowZ6C8peBjIV9jj99.jpg"
+    },
+    {
+        "adult": false,
+        "also_known_as": [
+            "马特·达蒙",
+            "Мэтт Дэймон",
+            "Мэтт Деймон",
+            "แม็ตต์ เดม่อน",
+            "マット・デイモン",
+            "맷 데이먼",
+            "مات ديمون",
+            "Метт Деймон",
+            "מאט דיימון",
+            "Dickie Greenleaf",
+            "Ματ Ντέιμον",
+            "麥特·戴蒙"
+        ],
+        "biography": "Matthew Paige Damon (born October 8, 1970) is an American actor, film producer, and screenwriter. He is the recipient of various accolades, including an Academy Award from five nominations, and two Golden Globe Awards. He also received three BAFTA Award nominations, seven Primetime Emmy Award nominations, and six Screen Actors Guild Awards.\n\nDamon made his professional acting debut in the film Mystic Pizza (1988). He came to prominence when he and Ben Affleck wrote and starred in Good Will Hunting (1997), which won them the Academy Award for Best Screenplay. He continued to garner praise for his roles in Saving Private Ryan (1998), The Talented Mr. Ripley (1999), the Ocean's trilogy (2001-2007), the Bourne franchise (2002-2016), The Departed (2006), Invictus (2009), True Grit (2010), Behind The Candelabra (2013), The Martian (2015), Ford v Ferrari (2019), and Air (2023).\n\nDamon has co-written the feature films Good Will Hunting (1997), Gerry (2002), Promised Land (2012) and The Last Duel (2021).\n\nHe has produced the reality series Project Greenlight (2001-2015) as well as multiple films including Manchester by the Sea (2016) and The Last Duel (2021). In 2022, he co-founded the production company Artists Equity.",
+        "birthday": "1970-10-08",
+        "deathday": null,
+        "gender": 2,
+        "homepage": null,
+        "id": 1892,
+        "imdb_id": "nm0000354",
+        "known_for_department": "Acting",
+        "name": "Matt Damon",
+        "place_of_birth": "Boston, Massachusetts, USA",
+        "popularity": 74.505,
+        "profile_path": "/At3JgvaNeEN4Z4ESKlhhes85Xo3.jpg"
+    }
+]
