@@ -36,7 +36,10 @@ const fetchMovieDetailsById = async (req, res) => {
         if (!response.ok) {
             throw new Error("Failed to fetch actor data")
         }
+
         const data = await response.json();
+
+        console.log(data);
 
         return res.status(200).json(data);
     }catch (error) {
@@ -56,6 +59,7 @@ const fetchMovieCastById = async (req, res) => {
             throw new Error("Failed to fetch movie cast data")
         }
         const data = await response.json();
+        //res.json(data);
 
         return res.status(200).json(data);
     }catch (error) {
