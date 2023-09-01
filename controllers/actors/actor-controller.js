@@ -2,9 +2,7 @@ import actors from './actors.js'
 import fetch from "node-fetch";
 import res from "express/lib/response.js";
 
-
-let stars = actors
-
+let stars = actors;
 const ActorController = (app) => {
     app.get('/api/actors', findActors)
     app.get('/api/actors/:aid/details', fetchActorById);

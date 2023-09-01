@@ -8,7 +8,6 @@ const MovieDetailsController = (app) => {
     app.get('/api/movie/trending', fetchTrendingMovies)
 }
 
-
 const options = {
     method: 'GET',
     headers: {
@@ -68,10 +67,6 @@ const fetchMovieCastById = async (req, res) => {
     }
 }
 
-
-
-
-
 const fetchMovieProvidersById = async (req, res) => {
     const MovieId = req.params.mid;
     const url = 'https://api.themoviedb.org/3/movie/' + MovieId + '/watch/providers';
@@ -108,8 +103,4 @@ const fetchTrendingMovies = async (req,res) => {
     }
 
 }
-
-
-
-
 export default MovieDetailsController;
