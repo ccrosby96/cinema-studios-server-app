@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import generateUrl from "../../helper_functions/functions.js";
+import {generateUrl, generateMultiSearchQueryUrl} from "../../helper_functions/functions.js";
 
 const MovieSearchController = (app) => {
     app.get('/api/movie/search', searchMovies)

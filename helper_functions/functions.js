@@ -19,8 +19,29 @@ const genreMap = {
     "War": "10752",
     "Western": "37"
 }
+const trailer = {
+    "iso_639_1": "en",
+    "iso_3166_1": "US",
+    "name": "Official Trailer 2",
+    "key": "eQfMbSe7F2g",
+    "site": "YouTube",
+    "size": 1080,
+    "type": "Trailer",
+    "official": true,
+    "published_at": "2023-04-07T11:57:51.000Z",
+    "id": "643093aa6dea3a00b54ea94f"
+}
+const videoBaseUrls = {
+    "YouTube" : "https://www.youtube.com/watch?v=",
+    "Vimeo" : "Vimeo: https://vimeo.com/"
+}
+export function extractTrailer(videoData) {
+    console.log('data in extractTrailers', videoData);
+    const trailers = videoData.results.filter(item => item.type === "Trailer");
 
-function generateUrl(filters) {
+    return trailers;
+}
+export function generateUrl(filters) {
     let url = 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false'
 
     // handle certification filters
@@ -73,4 +94,36 @@ function generateUrl(filters) {
     url += '&sort_by=popularity.desc'
     return url
 }
-export default generateUrl;
+export function generateMultiSearchQueryUrl(query) {
+    const base = 'https://api.themoviedb.org/3/search/multi?'
+    const words = query.split(' ');
+    const res = words.join('+')
+    const genUrl = base + 'query=' + res + '&include_adult=false&language=en-US';
+    return genUrl
+
+}
+export function separateMultiSearchResults(data) {
+    const results = data.results;
+    let movies = [];
+    let tv = [];
+    let people = [];
+
+    results.forEach((jsonObj) => {
+        if (jsonObj.media_type === "movie") {
+            movies.push(jsonObj);
+        } else if (jsonObj.media_type === "tv") {
+            tv.push(jsonObj);
+        } else if (jsonObj.media_type === "person") {
+            people.push(jsonObj);
+        }
+    });
+
+    const returnObject = {
+        movies: movies,
+        tv: tv,
+        people: people
+    };
+    console.log("returnObject", returnObject)
+    return returnObject;
+}
+

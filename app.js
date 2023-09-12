@@ -6,6 +6,8 @@ import ActorController from "./controllers/actors/actor-controller.js";
 import MovieDetailsController from "./controllers/movies/movie-details-controller.js";
 import MovieRecommendationsController from "./controllers/movies/movie-recommendations-controller.js";
 import MovieSearchController from "./controllers/movies/movie-search-controller.js";
+import MultiSearchController from "./controllers/search/search-controller.js";
+import TvController from "./controllers/tv/tv-controller.js";
 
 const app = express()
 app.use(cors())
@@ -15,6 +17,8 @@ ActorController(app)
 MovieDetailsController(app)
 MovieRecommendationsController(app)
 MovieSearchController(app);
+MultiSearchController(app)
+TvController(app)
 
 app.listen(4000)
 
