@@ -31,11 +31,11 @@ const GetMultiSearch = async (req, res) => {
         }
 
         const data = await response.json();
-        console.log("MultiSearch Data: ", data);
+
         const results = separateMultiSearchResults(data)
         data.url = cacheUrl;
         data.results = results;
-        console.log('total pages', data.total_pages);
+
         //console.log('data returned from generated queryUrl', data)
 
         return res.status(200).json(data);

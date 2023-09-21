@@ -27,7 +27,7 @@ const fetchTvSeriesCast = async (req,res) => {
         }
 
         const data = await response.json();
-        console.log('series rec: ', data);
+
 
 
 

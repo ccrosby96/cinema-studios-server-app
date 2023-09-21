@@ -30,7 +30,6 @@ const fetchMovieTrailersById = async (req,res) => {
         const data = await response.json();
         const results = extractTrailer(data)
         const returnObject = {"trailers": results}
-        console.log(returnObject);
 
         return res.status(200).json(returnObject);
     }catch (error) {

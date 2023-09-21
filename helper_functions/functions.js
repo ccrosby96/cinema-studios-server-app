@@ -36,13 +36,13 @@ const videoBaseUrls = {
     "Vimeo" : "Vimeo: https://vimeo.com/"
 }
 export function extractTrailer(videoData) {
-    console.log('data in extractTrailers', videoData);
+    //console.log('data in extractTrailers', videoData);
     const trailers = videoData.results.filter(item => item.type === "Trailer");
 
     return trailers;
 }
 export function generateUrl(filters) {
-    let url = 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false'
+    let url = 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&vote_count.gte=10'
 
     // handle certification filters
     const certs = filters['ratings']
@@ -123,7 +123,16 @@ export function separateMultiSearchResults(data) {
         tv: tv,
         people: people
     };
-    console.log("returnObject", returnObject)
+    //console.log("returnObject", returnObject)
     return returnObject;
+}
+export function isValidReview(review) {
+    return (
+        review &&
+        typeof review.author === "string" &&
+        typeof review.rating === "number" &&
+        typeof review.movieId === "number" &&
+        typeof review.body === "string"
+    );
 }
 

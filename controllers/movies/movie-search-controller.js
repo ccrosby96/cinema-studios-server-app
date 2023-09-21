@@ -53,7 +53,7 @@ const searchDiscoverMovies = async (req, res) => {
     // dynamically generate url for TMDB discover endpoint
     const cacheUrl = generateUrl(filters);
     const queryUrl = cacheUrl +'&page=1'
-    console.log('generated queryUrl: ',queryUrl);
+    //console.log('generated queryUrl: ',queryUrl);
 
     try {
         const response = await fetch(queryUrl, options);
