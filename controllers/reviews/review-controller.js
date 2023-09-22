@@ -39,7 +39,7 @@ const createReview = async (req, res) => {
         }
         // upon creation a review will have no comments =D
         newReview.comments = [];
-        const insertedReview = await reviewDao.createReview(newReview);
+        const insertedReview = await reviewDao.createReview(newReview)
         console.log(insertedReview);
         res.json(insertedReview)
     } catch (error) {

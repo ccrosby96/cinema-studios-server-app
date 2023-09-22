@@ -7,6 +7,9 @@ export const createUser = async (user) =>
 export const findUserByUsername = async (username) =>
      await userModel.findOne({username})
 
+export const findUserById = async (userId) => {
+     return await userModel.findById(userId);
+}
 export const findUserByCredentials = (username, password) =>
     userModel.findOne({username,password});
 export const updateUser = async (uid, user) => {

@@ -14,6 +14,30 @@ const schema = mongoose.Schema({
     following: Number,
     followers: Number,
     followed: Boolean,
+    watchlist: [
+        {
+            movieTitle: {
+                type: String,
+                required: true
+            },
+            movieId: {
+                type: String,
+                required: true,
+            },
+            posterPic: {
+                type: String,
+                default: "https://i.pinimg.com/736x/8b/99/ac/8b99ac9d4c6ab33de35a775e527d2fae--film-popcorn-film-reels.jpg"
+            },
+            movieDescription: {
+                type: String,
+                default: ""
+            },
+            releaseDate: {
+                type: Date,
+                default: Date.now,
+            },
+        }
+    ],
     role: {
         type: String,
         default: "user",

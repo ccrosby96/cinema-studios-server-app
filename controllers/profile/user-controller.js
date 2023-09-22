@@ -68,7 +68,7 @@ const login = async (req, res) => {
     const user = await usersDao
         .findUserByCredentials(username, password);
     if (user) {
-     // console.log('found user', user)
+     // setting logged-in user as current user
       req.session["currentUser"] = user;
       res.json(user);
     } else {
@@ -87,8 +87,57 @@ const profile = async (req, res) => {
       res.sendStatus(404);
       return;
     }
-    res.json(currentUser);
+    // Create a new object by excluding the 'password' field
+    const sanitizedUser = { ...currentUser };
+    delete sanitizedUser.password;
+    // Send the modified object as JSON response
+    res.json(sanitizedUser);
   };
+const addToWatchlist = async (req, res) => {
+    console.log("called addToWatchList");
+    const currentUser = req.session["currentUser"];
+    // is this user logged in?
+    if (!currentUser) {
+        console.log("user not logged in");
+        res.status(401).json({ error: 'User not authenticated' });
+        return;
+    }
+    const movieToAdd = req.body;
+    console.log('movieToAdd', movieToAdd);
+
+    try {
+        console.log('now trying to update watchlist of', currentUser._id);
+
+        // Find the user by their ID
+        const user = await usersDao.findUserById(currentUser._id);
+        console.log('user found', user);
+
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+            console.log("user authenticated, but not found in database")
+            return;
+        }
+
+        // Add the movie to the user's watchlist
+        user.watchlist.push(movieToAdd);
+
+        // Prepare an object with only the watchlist field to update
+        const updatedFields = { watchlist: user.watchlist };
+
+        // Convert the _id to a string
+        const userIdString = currentUser._id.toString();
+
+        // Use the updateUser method to update the user document
+        const result = await usersDao.updateUser(userIdString, updatedFields);
+        console.log("updateUser result", result);
+
+        res.status(200).json({ message: 'Movie added to watchlist' });
+    } catch (error) {
+        console.error('Error adding to watchlist:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 
 const UsersController = (app) => {
     app.post('/api/users/register', createUser);
@@ -99,6 +148,7 @@ const UsersController = (app) => {
     app.post('/api/users/login', login)
     app.post('/api/users/profile', profile);
     app.post('/api/users/logout', logout);
+    app.post('/api/users/add-to-watchlist', addToWatchlist);
 }
 export default UsersController;
 

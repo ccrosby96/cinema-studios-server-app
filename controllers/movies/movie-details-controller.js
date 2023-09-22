@@ -20,7 +20,6 @@ const options = {
 const fetchMovieTrailersById = async (req,res) => {
     const movieId = req.params.mid;
     const url = 'https://api.themoviedb.org/3/movie/' + movieId + '/videos?language=en-US';
-    console.log('url for fetchMovieVideos', url);
     try {
         const response = await fetch(url, options);
 
