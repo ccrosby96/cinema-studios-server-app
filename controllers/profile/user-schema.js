@@ -23,6 +23,7 @@ const schema = mongoose.Schema({
             movieId: {
                 type: String,
                 required: true,
+                unique: true
             },
             posterPic: {
                 type: String,

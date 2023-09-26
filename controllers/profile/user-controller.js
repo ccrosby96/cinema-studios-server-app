@@ -4,10 +4,27 @@ import {findUserByUsername} from "./user-dao.js";
 const updateUser = async (req, res) => {
     const uid = req.params.uid;
     const user = req.body;
-    const status = await usersDao.updateUser(uid, user);
-    req.session["currentUser"] = req.body;
-    res.json(status);
-}
+
+    try {
+        console.log('uid in  update user is', uid);
+        const status = await usersDao.updateUser(uid, user);
+
+        // Retrieve the updated user data from the database
+        const updatedUser = await usersDao.findUserById(uid); // Replace with your actual function
+
+        // Update req.session["currentUser"] with the updated user data
+        req.session["currentUser"] = updatedUser._doc;
+
+        res.json(status);
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
+// Assume that usersDao.updateUser function handles errors and returns the status accordingly.
+
 
 const deleteUser = async (req, res) => {
     const uid = req.params.uid;
@@ -64,7 +81,7 @@ const findUsers = async (req, res) => {
 const login = async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-    console.log('called login on server', username, password);
+    //console.log('called login on server', username, password);
     const user = await usersDao
         .findUserByCredentials(username, password);
     if (user) {
@@ -88,7 +105,11 @@ const profile = async (req, res) => {
       return;
     }
     // Create a new object by excluding the 'password' field
-    const sanitizedUser = { ...currentUser };
+    const user = await usersDao.findUserById(currentUser._id);
+    const userData = user._doc;
+
+    const sanitizedUser = { ...userData };
+    console.log("profile on backend", sanitizedUser);
     delete sanitizedUser.password;
     // Send the modified object as JSON response
     res.json(sanitizedUser);
@@ -137,7 +158,41 @@ const addToWatchlist = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+const deleteFromWatchlist = async (req,res) => {
+    const currentUser = req.session["currentUser"];
+    // is this user logged in?
+    if (!currentUser) {
+        console.log("user not logged in");
+        res.status(401).json({ error: 'User not authenticated' });
+        return;
+    }
+    // Assume req.params.movieId contains the _id of the movie to be removed
+    const movieIdToRemove = req.params.mid;
 
+    try {
+        // Find the user by their ID
+        const user = await usersDao.findUserById(currentUser._id);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Use Array.filter to create a new watchlist without the movie to remove
+        user.watchlist = user.watchlist.filter(movie => movie.movieId !== movieIdToRemove);
+        const updatedFields = { watchlist: user.watchlist };
+        console.log('updatedFields', updatedFields);
+
+        // Save the updated user document
+        const result = await usersDao.updateUser(currentUser._id, updatedFields);
+
+        res.status(200).json({ message: 'Movie removed from watchlist' });
+    } catch (error) {
+        console.error('Error removing movie from watchlist:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+
+
+}
 
 const UsersController = (app) => {
     app.post('/api/users/register', createUser);
@@ -149,6 +204,7 @@ const UsersController = (app) => {
     app.post('/api/users/profile', profile);
     app.post('/api/users/logout', logout);
     app.post('/api/users/add-to-watchlist', addToWatchlist);
+    app.delete('/api/users/watchlist/:mid', deleteFromWatchlist)
 }
 export default UsersController;
 

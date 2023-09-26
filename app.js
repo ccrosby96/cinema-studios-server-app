@@ -1,8 +1,6 @@
 import express from 'express'
 import cors from 'cors'
 import mongoose from "mongoose";
-import HelloController
-    from "./controllers/hello-controller.js"
 import ActorController from "./controllers/actors/actor-controller.js";
 import MovieDetailsController from "./controllers/movies/movie-details-controller.js";
 import MovieRecommendationsController from "./controllers/movies/movie-recommendations-controller.js";
@@ -28,7 +26,6 @@ app.use(
         saveUninitialized: true
     })
 );
-HelloController(app)
 ActorController(app)
 MovieDetailsController(app)
 MovieRecommendationsController(app)
