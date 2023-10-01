@@ -40,7 +40,7 @@ const fetchMovieTrailersById = async (req,res) => {
 const fetchMovieDetailsById = async (req, res) => {
     const MovieId = req.params.uid;
     //const url = 'https://api.themoviedb.org/3/movie/' + MovieId +'language=en-US';
-    const url = 'https://api.themoviedb.org/3/movie/'+ MovieId + '?append_to_response=release_dates&language=en-US';
+    const url = 'https://api.themoviedb.org/3/movie/'+ MovieId + '?append_to_response=release_dates%2Ccredits%2Crecommendations%2Cvideos&language=en-US';
     console.log(url)
     const options = {
         method: 'GET',
@@ -55,8 +55,10 @@ const fetchMovieDetailsById = async (req, res) => {
         if (!response.ok) {
             throw new Error("Failed to fetch actor data")
         }
-
+        // extracting trailers from videos results on server
         const data = await response.json();
+        const trailers = extractTrailer(data)
+        data.trailers = trailers
         return res.status(200).json(data);
     }catch (error) {
         return res.status(500).json({error : error.message});

@@ -109,7 +109,7 @@ const profile = async (req, res) => {
     const userData = user._doc;
 
     const sanitizedUser = { ...userData };
-    console.log("profile on backend", sanitizedUser);
+    //console.log("profile on backend", sanitizedUser);
     delete sanitizedUser.password;
     // Send the modified object as JSON response
     res.json(sanitizedUser);

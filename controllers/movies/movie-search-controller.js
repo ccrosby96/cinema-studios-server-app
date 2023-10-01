@@ -47,7 +47,6 @@ const searchDiscoverMovies = async (req, res) => {
 
     const body = req.body;
     //console.log('search params received on server: ',body)
-    const searchText = body.searchText;
     const filters = body.filters;
    //console.log('filter state received on backend', filters)
     // dynamically generate url for TMDB discover endpoint

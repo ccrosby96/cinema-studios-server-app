@@ -35,10 +35,9 @@ const videoBaseUrls = {
     "YouTube" : "https://www.youtube.com/watch?v=",
     "Vimeo" : "Vimeo: https://vimeo.com/"
 }
-export function extractTrailer(videoData) {
+export function extractTrailer(details) {
     //console.log('data in extractTrailers', videoData);
-    const trailers = videoData.results.filter(item => item.type === "Trailer");
-
+    const trailers = details.videos.results.filter(item => item.type === "Trailer");
     return trailers;
 }
 export function generateUrl(filters) {

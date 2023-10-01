@@ -1,4 +1,47 @@
 import mongoose from 'mongoose';
+import mongooseAutoPopulate from "mongoose-autopopulate";
+
+const likeDislikeSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    isLike: {
+        type: Boolean,
+        required: true,
+    },
+});
+
+const commentSchema = new mongoose.Schema({
+    author: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    parentComment: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: null,
+    },
+    replyTo: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+    },
+    body: {
+        type: String,
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    likeDislikes: [likeDislikeSchema],
+    likes: {
+        type: Number,
+        default: 0,
+    },
+});
 
 const reviewSchema = new mongoose.Schema({
     author: {
@@ -16,6 +59,7 @@ const reviewSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    likeDislikes: [likeDislikeSchema],
     movieId: {
         type: Number,
         required: true,
@@ -24,26 +68,15 @@ const reviewSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    comments: [
-        {
-            author: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User', // Reference to the User model
-                required: true,
-            },
-            text: {
-                type: String,
-                required: true,
-            },
-            createdAt: {
-                type: Date,
-                default: Date.now,
-            },
-        },
-    ],
+    comments: [commentSchema],
     createdAt: {
         type: Date,
         default: Date.now,
     },
 }, {collection: "movie_reviews"});
+
+
+// Middleware to update totalLikes whenever a like or dislike is added or removed
+
 export default reviewSchema;
+
