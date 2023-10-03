@@ -60,23 +60,30 @@ const populateComments = async (comments) => {
 const createReview = async (req, res) => {
     try {
         const newReview = req.body;
-        console.log("newReview on server", newReview);
 
-
-        // validate user review first
+        // Validate user review first
         if (!isValidReview(newReview)) {
-            console.log("the review was invalid")
             return res.status(400).json({ error: "Invalid review data" });
         }
-        // upon creation a review will have no comments =D
+
+        // Upon creation, a review will have no comments =D
         newReview.comments = [];
-        const insertedReview = await reviewDao.createReview(newReview)
-        console.log(insertedReview);
-        res.json(insertedReview)
+
+        // Create the review
+        const insertedReview = await reviewDao.createReview(newReview);
+
+        // Populate author username and profile pic
+        const populatedReview = await insertedReview
+            .populate('author', ['username', 'profilePic'])
+
+
+        res.json(populatedReview);
     } catch (error) {
-        // Handle other errors, e.g., database errors
+        console.error("Error creating review:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 };
+
 // Assuming you have a MovieReview model based on the reviewSchema
 
 const updateLikeDislike = async (req,res) =>{
