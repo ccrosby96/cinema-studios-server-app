@@ -55,6 +55,10 @@ const reviewSchema = new mongoose.Schema({
         min: 0, // Minimum rating value
         max: 10, // Maximum rating value
     },
+    containsSpoilers: {
+        type: Boolean,
+        default: false,
+    },
     likes: {
         type: Number,
         default: 0,
