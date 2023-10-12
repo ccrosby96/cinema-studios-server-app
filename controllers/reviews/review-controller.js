@@ -8,8 +8,10 @@ const findReviews = async (req, res) => {
 }
 const findReviewsByUser = async (req, res) => {
     try {
-        const userId = req.params.userId;
-        const reviews = await reviewDao.findReviewsByUserId(userId)
+        const userId = req.params.uid;
+        console.log("in findReviewsByUser, uid is ", userId);
+        const reviews = await reviewDao.findReviewsByUserIdBodyOnly(userId)
+        console.log('reviews found are', reviews);
         res.json(reviews);
     } catch (error){
         console.error('Error finding reviews by user:', error);

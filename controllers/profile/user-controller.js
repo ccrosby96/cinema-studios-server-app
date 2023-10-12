@@ -12,19 +12,18 @@ const updateUser = async (req, res) => {
         // Retrieve the updated user data from the database
         const updatedUser = await usersDao.findUserById(uid); // Replace with your actual function
 
-        // Update req.session["currentUser"] with the updated user data
-        req.session["currentUser"] = updatedUser._doc;
+        const userData = updatedUser._doc;
 
-        res.json(status);
+        const sanitizedUser = { ...userData };
+        delete sanitizedUser.password;
+        console.log('updated user after updateUser',sanitizedUser)
+
+        res.json(sanitizedUser);
     } catch (error) {
         console.error("Error updating user:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 };
-
-
-// Assume that usersDao.updateUser function handles errors and returns the status accordingly.
-
 
 const deleteUser = async (req, res) => {
     const uid = req.params.uid;
@@ -109,7 +108,6 @@ const profile = async (req, res) => {
     const userData = user._doc;
 
     const sanitizedUser = { ...userData };
-    //console.log("profile on backend", sanitizedUser);
     delete sanitizedUser.password;
     // Send the modified object as JSON response
     res.json(sanitizedUser);
@@ -158,6 +156,76 @@ const addToWatchlist = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+const addToFavorites = async (req,res) => {
+    const currentUser = req.session["currentUser"];
+    if (!currentUser) {
+        console.log("user not logged in");
+        res.status(401).json({ error: 'User not authenticated' });
+        return;
+    }
+    const movieToAdd = req.body;
+    console.log('movieToAdd', movieToAdd);
+    try {
+        console.log('now trying to update favoritesList of', currentUser._id);
+
+        // Find the user by their ID
+        const user = await usersDao.findUserById(currentUser._id);
+        console.log('user found', user);
+
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+            console.log("user authenticated, but not found in database")
+            return;
+        }
+        // Add the movie to the user's watchlist
+        user.favoriteMovies.push(movieToAdd);
+
+        // Prepare an object with only the favorites field to update
+        const updatedFields = { favoriteMovies: user.favoriteMovies };
+
+        // Convert the _id to a string
+        const userIdString = currentUser._id.toString();
+
+        // Use the updateUser method to update the user document
+        const result = await usersDao.updateUser(userIdString, updatedFields);
+        console.log("updateUser result", result);
+        res.json(movieToAdd);
+
+    } catch (error) {
+        console.error('Error adding to favorites:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+const deleteFromFavorites = async (req,res) => {
+    const currentUser = req.session["currentUser"];
+    // is this user logged in?
+    if (!currentUser) {
+        console.log("user not logged in");
+        res.status(401).json({ error: 'User not authenticated' });
+        return;
+    }
+    const movieIdToRemove = req.params.mid;
+
+    try {
+        // Find the user by their ID
+        const user = await usersDao.findUserById(currentUser._id);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Use Array.filter to create a new watchlist without the movie to remove
+        user.favoriteMovies = user.favoriteMovies.filter(movie => movie.movieId !== movieIdToRemove);
+        const updatedFields = { favoriteMovies: user.favoriteMovies };
+        console.log('updatedFields', updatedFields);
+        // Save the updated user document
+        const result = await usersDao.updateUser(currentUser._id, updatedFields);
+        res.status(200).json({ message: 'Movie removed from favorites' });
+    } catch (error) {
+        console.error('Error removing movie from favorites:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
 const deleteFromWatchlist = async (req,res) => {
     const currentUser = req.session["currentUser"];
     // is this user logged in?
@@ -184,15 +252,14 @@ const deleteFromWatchlist = async (req,res) => {
 
         // Save the updated user document
         const result = await usersDao.updateUser(currentUser._id, updatedFields);
-
         res.status(200).json({ message: 'Movie removed from watchlist' });
     } catch (error) {
         console.error('Error removing movie from watchlist:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 
-
 }
+
 
 const UsersController = (app) => {
     app.post('/api/users/register', createUser);
@@ -204,7 +271,9 @@ const UsersController = (app) => {
     app.post('/api/users/profile', profile);
     app.post('/api/users/logout', logout);
     app.post('/api/users/add-to-watchlist', addToWatchlist);
+    app.post('/api/users/add-to-favorites', addToFavorites);
     app.delete('/api/users/watchlist/:mid', deleteFromWatchlist)
+    app.delete('/api/users/favorites/:mid', deleteFromFavorites)
 }
 export default UsersController;
 

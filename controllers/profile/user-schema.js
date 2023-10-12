@@ -1,5 +1,25 @@
 import mongoose from 'mongoose';
 
+const movieFavorite = new mongoose.Schema({
+    movieTitle: {
+        type: String,
+        required: true
+    },
+    movieId: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    posterPic: {
+        type: String,
+        default: "https://media.istockphoto.com/id/1039351052/vector/movie-and-film-festival-poster-template-design-modern-retro-vintage-style.jpg?s=612x612&w=0&k=20&c=aPVSLX7VlJj7DYBZ8afyj9ca15qoZEeZkLj_1exaUfE="
+    },
+    dateAdded: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
 const schema = mongoose.Schema({
     firstName: String, lastName: String,
     username: { type: String, unique: true, required: true },
@@ -8,6 +28,7 @@ const schema = mongoose.Schema({
     createdAt: {type: Date, default: Date.now},
     isAdmin: {type: Boolean, default: false},
     profilePic: String,
+    favoriteMovies: [movieFavorite],
     bio: String,
     location: String,
     dateOfBirth: Date,

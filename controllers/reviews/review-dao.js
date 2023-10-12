@@ -7,6 +7,12 @@ export const findReviewById = async (rid) => {
     return reviewModel.findOne({_id: rid});
 }
 export const findReviewsByUserId = (userId) => reviewModel.find({author: userId});
+export const findReviewsByUserIdBodyOnly = (userId) => reviewModel.find(
+    { author: userId },
+    { comments: 0, likeDislikes: 0 } // Exclude 'comments' and 'likeDislikes' fields
+);
+
+
 export const createReview = (review) => reviewModel.create(review);
 export const deleteReview = (rid) => reviewModel.deleteOne({_id: rid});
 export const updateReview = async (rid, review) => {

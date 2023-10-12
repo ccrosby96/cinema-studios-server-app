@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import mongooseAutoPopulate from "mongoose-autopopulate";
 
 const likeDislikeSchema = new mongoose.Schema({
     user: {
@@ -67,6 +66,12 @@ const reviewSchema = new mongoose.Schema({
     movieId: {
         type: Number,
         required: true,
+    },
+    movieTitle: {
+        type: String,
+    },
+    posterPic: {
+        type: String,
     },
     body: {
         type: String,
