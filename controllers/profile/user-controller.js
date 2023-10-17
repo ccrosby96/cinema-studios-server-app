@@ -30,23 +30,6 @@ const deleteUser = async (req, res) => {
     const status = await usersDao.deleteUser(uid);
     res.json(status);
 }
-
-const register = async (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    const user = await usersDao
-        .findUserByUsername(username)
-
-    if (user) {
-        res.sendStatus(409);
-        return;
-    }
-    const newUser = await usersDao
-        .createUser(req.body);
-    req.session["currentUser"] = newUser;
-    res.json(newUser);
-};
-
 const createUser = async (req, res) => {
     console.log("called CreateUser on server with user info:", req.body);
     const newUser = req.body;
@@ -76,6 +59,32 @@ const findUsers = async (req, res) => {
     const users = await usersDao.findUsers();
     res.json(users);
 }
+const getBaseProfileByUsername = async (req, res) => {
+    try {
+        const username = req.params.username; // Assuming 'username' is a property of req.params
+
+        const user = await usersDao.findUserByUsername(username);
+
+        if (!user) {
+            // If user is not found, return an error response
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const userData = user._doc;
+
+        // Sanitize user data
+        const sanitizedUser = { ...userData };
+        delete sanitizedUser.password;
+        delete sanitizedUser.email;
+        delete sanitizedUser.dateOfBirth;
+
+        res.json(sanitizedUser);
+    } catch (error) {
+        // Handle other errors (e.g., database error, unexpected error)
+        console.error('Error fetching base profile by username:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
 const login = async (req, res) => {
     const username = req.body.username;
@@ -154,6 +163,45 @@ const addToWatchlist = async (req, res) => {
     } catch (error) {
         console.error('Error adding to watchlist:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+}
+const getUserWatchlistByUsername = async (req,res) => {
+    try {
+        const username = req.params.username; // Assuming 'username' is a property of req.params
+
+        const user = await usersDao.findUserByUsername(username);
+
+        if (!user) {
+            // If user is not found, return an error response
+            return res.status(404).json({error: 'User not found'});
+        }
+        const data = {username: user.username,
+            profilePic: user.profilePic,
+            watchlist: user.watchlist
+        }
+
+        res.json(data);
+    }catch (error){
+        console.log(error)
+    }
+}
+const getFavoritesByUsername = async (req,res) => {
+    try {
+        const username = req.params.username; // Assuming 'username' is a property of req.params
+        const user = await usersDao.findUserByUsername(username);
+
+        if (!user) {
+            // If user is not found, return an error response
+            return res.status(404).json({error: 'User not found'});
+        }
+        const data = {username: user.username,
+            profilePic: user.profilePic,
+            favoriteMovies: user.favoriteMovies
+        }
+        console.log('favorites found for user', username, data);
+        res.json(data);
+    }catch (error){
+        console.log(error)
     }
 }
 const addToFavorites = async (req,res) => {
@@ -263,8 +311,11 @@ const deleteFromWatchlist = async (req,res) => {
 
 const UsersController = (app) => {
     app.post('/api/users/register', createUser);
-    app.get('/api/users/all', findUsers)
+    app.get('/api/users/all', findUsers);
+    app.get('/api/users/:username/base-profile', getBaseProfileByUsername);
     app.get('/api/users/:uid', findUserByUsername);
+    app.get('/api/users/:username/watchlist', getUserWatchlistByUsername)
+    app.get('/api/users/:username/favorites', getFavoritesByUsername)
     app.put('/api/users/:uid', updateUser);
     app.delete('/api/users/:uid', deleteUser);
     app.post('/api/users/login', login)

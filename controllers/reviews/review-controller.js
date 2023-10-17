@@ -1,6 +1,7 @@
 import * as reviewDao from './review-dao.js'
-import {findUserByUsername} from "../profile/user-dao.js";
+import {findUserById, findUserByUsername} from "../profile/user-dao.js";
 import {isValidReview} from "../../helper_functions/functions.js";
+import * as userDao from "../profile/user-dao.js";
 
 const findReviews = async (req, res) => {
     const reviews = await reviewDao.findReviews();
@@ -13,6 +14,34 @@ const findReviewsByUser = async (req, res) => {
         const reviews = await reviewDao.findReviewsByUserIdBodyOnly(userId)
         console.log('reviews found are', reviews);
         res.json(reviews);
+    } catch (error){
+        console.error('Error finding reviews by user:', error);
+        res.status(500).json({ message: 'Finding user reviews failed'});
+    }
+}
+const findReviewsByUsername = async (req,res) => {
+    try {
+        const username = req.params.user;
+        // first check if a user with this username exists
+        console.log('username in findReviewsByUsername is ', username);
+        const author = await userDao.findUserByUsername(username);
+
+        if (!author) {
+            res.status(500).json({ message: 'Could not find an author with that username'});
+            return
+        }
+        console.log("in findReviewsByUsername author object is", author);
+        const userId = author._id;
+        console.log("in findReviewsByUsername, username is ", userId);
+        // grab reviews by this author
+        const reviews = await reviewDao.findReviewsByUserIdBodyOnly(userId)
+        // in response object include username, avatar, and reviews for rendering
+        const data = {username: author.username,
+                        profilePic: author.profilePic,
+                        reviews: reviews
+                        }
+        console.log('reviews found are', reviews);
+        res.json(data);
     } catch (error){
         console.error('Error finding reviews by user:', error);
         res.status(500).json({ message: 'Finding user reviews failed'});
@@ -165,6 +194,7 @@ const MovieReviewsController = (app) => {
     app.post('/api/reviews/movies', createReview);
     app.get('/api/reviews/movies', findReviews);
     app.get('/api/reviews/movies/user/:uid', findReviewsByUser);
+    app.get('/api/reviews/movies/user/username/:user',findReviewsByUsername)
     app.get('/api/reviews/movies/movie/:mid', findReviewsByMovieId)
     app.put('/api/reviews/movies', updateReview);
     app.delete('/api/reviews/movies/:rid', deleteReview);

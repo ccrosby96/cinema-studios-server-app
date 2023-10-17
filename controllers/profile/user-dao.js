@@ -4,8 +4,9 @@ import userModel from "./user-model.js";
 export const createUser = async (user) =>
      await userModel.create(user);
 
-export const findUserByUsername = async (username) =>
-     await userModel.findOne({username})
+export const findUserByUsername = async (username) => {
+     return await userModel.findOne({username})
+}
 
 export const findUserById = async (userId) => {
      return await userModel.findById(userId);
