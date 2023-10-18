@@ -10,7 +10,7 @@ const updateUser = async (req, res) => {
         const status = await usersDao.updateUser(uid, user);
 
         // Retrieve the updated user data from the database
-        const updatedUser = await usersDao.findUserById(uid); // Replace with your actual function
+        const updatedUser = await usersDao.findUserById(uid);
 
         const userData = updatedUser._doc;
 
@@ -61,30 +61,52 @@ const findUsers = async (req, res) => {
 }
 const getBaseProfileByUsername = async (req, res) => {
     try {
-        const username = req.params.username; // Assuming 'username' is a property of req.params
-
+        const username = req.params.username;
         const user = await usersDao.findUserByUsername(username);
 
         if (!user) {
-            // If user is not found, return an error response
             return res.status(404).json({ error: 'User not found' });
         }
+        //console.log('user in getBaseProfile', user)
+        const userId = user._id;
 
-        const userData = user._doc;
+        try {
+            // first page of followers to display on profile
+            const followers = await usersDao.findFollowersOfUserById(userId);
+            // first page of people this user is following
+            const following = await usersDao.findFollowingListByUserId(userId);
+            // number of followers this user has total
+            const followersCount = await usersDao.getNumberofFollowersByUserId(userId);
+            // number of people this user is following total
+            const followingCount = await usersDao.getNumberofFollowingByUserId(userId);
 
-        // Sanitize user data
-        const sanitizedUser = { ...userData };
-        delete sanitizedUser.password;
-        delete sanitizedUser.email;
-        delete sanitizedUser.dateOfBirth;
+            const userData = user._doc;
 
-        res.json(sanitizedUser);
+            // Sanitize user data
+            const sanitizedUser = { ...userData };
+            delete sanitizedUser.password;
+            delete sanitizedUser.email;
+            delete sanitizedUser.dateOfBirth;
+
+            // Add followers to the user data and counts
+            sanitizedUser.followers = followers;
+            sanitizedUser.following = following;
+            sanitizedUser.followersCount = followersCount
+            sanitizedUser.followingCount = followingCount
+            console.log('generated base profile', sanitizedUser)
+
+            // Return the sanitized user data
+            res.json(sanitizedUser);
+        } catch (followersError) {
+            console.error('Error fetching followers:', followersError);
+            res.status(500).json({ error: 'Error fetching followers' });
+        }
     } catch (error) {
-        // Handle other errors (e.g., database error, unexpected error)
         console.error('Error fetching base profile by username:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 const login = async (req, res) => {
     const username = req.body.username;
@@ -305,8 +327,96 @@ const deleteFromWatchlist = async (req,res) => {
         console.error('Error removing movie from watchlist:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-
 }
+const getUserFollowingList = async (req,res) => {
+    // this function gets all the people that the user in params is FOLLOWING
+    try {
+        const userId = req.params.uid;
+        const followingList = await usersDao.findFollowingListByUserId(userId)
+            .populate('following', ['username', 'profilePic'])
+
+        console.log('list of people this person is following', followingList);
+        res.json(followingList);
+    }catch (error){
+        console.log(error)
+    }
+}
+const getFollowersList = async (req,res) => {
+    // this function gets all the people that FOLLOW the user in params
+    try {
+        const userId = req.params.uid;
+        const followersList = await usersDao.findFollowersOfUserById(userId)
+            .populate('follower', ['username', 'profilePic'])
+
+        console.log('list of people following this person', followersList);
+        res.json(followersList);
+    }catch (error){
+        console.log(error)
+    }
+}
+const checkForFollowRelationship = async (req,res) => {
+    try {
+        const userId = req.params.userId;
+        const targetUserId = req.params.targetUserId;
+
+        const result = await usersDao.checkForFollowRelationship(userId, targetUserId);
+
+        if (result) {
+            res.json({follows: true})
+        }
+        else {
+            res.json({follows: false})
+        }
+    }catch(error) {
+        console.log(error)
+    }
+}
+// creating a follow relationship
+const followUser = async (req,res) => {
+    const currentUser = req.session["currentUser"];
+    // is this user logged in?
+    if (!currentUser) {
+        console.log("user not logged in");
+        res.status(401).json({ error: 'User not authenticated' });
+        return;
+    }
+    const relationship = req.body;
+    try {
+        const  insertedRelationship = await usersDao.createFollowRelationship(relationship)
+        res.json(insertedRelationship);
+    }catch (error) {
+        console.error(error)
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+const unfollowUser = async (req, res) => {
+    const currentUser = req.session["currentUser"];
+
+    // Check if the user is logged in
+    if (!currentUser) {
+        console.log("User not logged in");
+        return res.status(401).json({ error: 'User not authenticated' });
+    }
+    const userId = req.params.userId;
+    const targetUserId = req.params.targetUserId;
+
+    try {
+        // Check if the follow relationship exists
+        const followObject = await usersDao.checkForFollowRelationship(userId, targetUserId);
+
+        if (followObject) {
+            // If it exists, delete the follow relationship
+            await usersDao.deleteFollowRelationship(followObject._id);
+            res.status(200).json({ success: true });
+        } else {
+            // If the follow relationship doesn't exist, return failure status
+            res.status(404).json({ error: 'Follow relationship not found' });
+        }
+    } catch (error) {
+        console.error("Error unfollowing user:", error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
 
 
 const UsersController = (app) => {
@@ -325,6 +435,11 @@ const UsersController = (app) => {
     app.post('/api/users/add-to-favorites', addToFavorites);
     app.delete('/api/users/watchlist/:mid', deleteFromWatchlist)
     app.delete('/api/users/favorites/:mid', deleteFromFavorites)
+    app.get('/api/users/:uid/followers', getFollowersList)
+    app.get('/api/users/:uid/following', getUserFollowingList)
+    app.get('/api/users/:userId/follows/:targetUserId', checkForFollowRelationship);
+    app.post('/api/users/follow',followUser)
+    app.delete('/api/users/:userId/unfollow/:targetUserId',unfollowUser);
 }
 export default UsersController;
 

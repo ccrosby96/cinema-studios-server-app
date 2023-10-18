@@ -8,6 +8,7 @@ const MovieDetailsController = (app) => {
     app.get('/api/movie/providers/:mid', fetchMovieProvidersById)
     app.get('/api/movie/trending', fetchTrendingMovies)
     app.get('/api/movie/:mid/videos', fetchMovieTrailersById)
+    app.get('/api/movie/upcoming', fetchUpcomingMovies)
 }
 
 const options = {
@@ -119,6 +120,22 @@ const fetchTrendingMovies = async (req,res) => {
     }catch (error) {
         return res.status(500).json({error : error.message});
 
+    }
+}
+const fetchUpcomingMovies = async (req,res) => {
+
+    const url = 'https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1';
+    try {
+        const response = await fetch(url, options);
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch movie cast data")
+        }
+        const data = await response.json();
+
+        return res.status(200).json(data);
+    }catch (error) {
+        return res.status(500).json({error : error.message});
     }
 }
 export default MovieDetailsController;
