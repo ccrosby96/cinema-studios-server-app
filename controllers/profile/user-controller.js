@@ -16,7 +16,6 @@ const updateUser = async (req, res) => {
 
         const sanitizedUser = { ...userData };
         delete sanitizedUser.password;
-        console.log('updated user after updateUser',sanitizedUser)
 
         res.json(sanitizedUser);
     } catch (error) {
@@ -93,7 +92,7 @@ const getBaseProfileByUsername = async (req, res) => {
             sanitizedUser.following = following;
             sanitizedUser.followersCount = followersCount
             sanitizedUser.followingCount = followingCount
-            console.log('generated base profile', sanitizedUser)
+
 
             // Return the sanitized user data
             res.json(sanitizedUser);
@@ -144,27 +143,20 @@ const profile = async (req, res) => {
     res.json(sanitizedUser);
   };
 const addToWatchlist = async (req, res) => {
-    console.log("called addToWatchList");
+
     const currentUser = req.session["currentUser"];
     // is this user logged in?
     if (!currentUser) {
-        console.log("user not logged in");
         res.status(401).json({ error: 'User not authenticated' });
         return;
     }
     const movieToAdd = req.body;
-    console.log('movieToAdd', movieToAdd);
-
     try {
-        console.log('now trying to update watchlist of', currentUser._id);
-
         // Find the user by their ID
         const user = await usersDao.findUserById(currentUser._id);
-        console.log('user found', user);
 
         if (!user) {
             res.status(404).json({ error: 'User not found' });
-            console.log("user authenticated, but not found in database")
             return;
         }
 
@@ -179,7 +171,6 @@ const addToWatchlist = async (req, res) => {
 
         // Use the updateUser method to update the user document
         const result = await usersDao.updateUser(userIdString, updatedFields);
-        console.log("updateUser result", result);
 
         res.status(200).json({ message: 'Movie added to watchlist' });
     } catch (error) {
@@ -220,7 +211,6 @@ const getFavoritesByUsername = async (req,res) => {
             profilePic: user.profilePic,
             favoriteMovies: user.favoriteMovies
         }
-        console.log('favorites found for user', username, data);
         res.json(data);
     }catch (error){
         console.log(error)
@@ -234,14 +224,9 @@ const addToFavorites = async (req,res) => {
         return;
     }
     const movieToAdd = req.body;
-    console.log('movieToAdd', movieToAdd);
     try {
-        console.log('now trying to update favoritesList of', currentUser._id);
-
         // Find the user by their ID
         const user = await usersDao.findUserById(currentUser._id);
-        console.log('user found', user);
-
         if (!user) {
             res.status(404).json({ error: 'User not found' });
             console.log("user authenticated, but not found in database")
@@ -258,7 +243,6 @@ const addToFavorites = async (req,res) => {
 
         // Use the updateUser method to update the user document
         const result = await usersDao.updateUser(userIdString, updatedFields);
-        console.log("updateUser result", result);
         res.json(movieToAdd);
 
     } catch (error) {
@@ -287,7 +271,6 @@ const deleteFromFavorites = async (req,res) => {
         // Use Array.filter to create a new watchlist without the movie to remove
         user.favoriteMovies = user.favoriteMovies.filter(movie => movie.movieId !== movieIdToRemove);
         const updatedFields = { favoriteMovies: user.favoriteMovies };
-        console.log('updatedFields', updatedFields);
         // Save the updated user document
         const result = await usersDao.updateUser(currentUser._id, updatedFields);
         res.status(200).json({ message: 'Movie removed from favorites' });
@@ -312,13 +295,11 @@ const deleteFromWatchlist = async (req,res) => {
         const user = await usersDao.findUserById(currentUser._id);
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({ error: 'User not found while removing from watchlist' });
         }
-
         // Use Array.filter to create a new watchlist without the movie to remove
         user.watchlist = user.watchlist.filter(movie => movie.movieId !== movieIdToRemove);
         const updatedFields = { watchlist: user.watchlist };
-        console.log('updatedFields', updatedFields);
 
         // Save the updated user document
         const result = await usersDao.updateUser(currentUser._id, updatedFields);
@@ -335,7 +316,6 @@ const getUserFollowingList = async (req,res) => {
         const followingList = await usersDao.findFollowingListByUserId(userId)
             .populate('following', ['username', 'profilePic'])
 
-        console.log('list of people this person is following', followingList);
         res.json(followingList);
     }catch (error){
         console.log(error)
@@ -348,7 +328,6 @@ const getFollowersList = async (req,res) => {
         const followersList = await usersDao.findFollowersOfUserById(userId)
             .populate('follower', ['username', 'profilePic'])
 
-        console.log('list of people following this person', followersList);
         res.json(followersList);
     }catch (error){
         console.log(error)

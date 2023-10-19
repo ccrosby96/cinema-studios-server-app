@@ -151,6 +151,49 @@ const updateLikeDislike = async (req,res) =>{
         throw error;
     }
 }
+const updateCommentLikeDislike = async (req, res) => {
+    console.log('comment vote on backend', req.body);
+    try {
+        console.log('comment vote on backend', req.body);
+        const { reviewId, commentId, userId, isLike } = req.body;
+        console.log('reviewId,commentId,userId,isLike in updateComment...', reviewId,commentId,userId,isLike);
+
+        const review = await reviewDao.findReviewById(reviewId);
+
+        if (!review) {
+            console.log('review not found with reviewId', reviewId);
+            return res.status(404).json({ error: 'Review not found' });
+        }
+
+        const comments = review.comments;
+        console.log('comments of review', comments);
+        const indexOfTargetComment = comments.findIndex(comment => comment._id.toString() === commentId.toString());
+        console.log('index of comment', indexOfTargetComment)
+
+        if (indexOfTargetComment !== -1) {
+            const targetComment = comments[indexOfTargetComment];
+            const existingLikeDislike = targetComment.likeDislikes.find(ld => ld.user.toString() === userId.toString());
+
+            if (existingLikeDislike) {
+                existingLikeDislike.isLike = isLike;
+            } else {
+                targetComment.likeDislikes.push({ user: userId, isLike });
+            }
+
+            const updatedLikes = targetComment.likeDislikes.reduce((total, ld) => (ld.isLike ? total + 1 : total - 1), 0);
+            targetComment.likes = updatedLikes;
+            const updatedReview = await review.save();
+
+            return res.json(targetComment);
+        }
+
+        return res.status(404).json({ error: 'Comment not found' });
+    } catch (error) {
+        console.error('Error updating likeDislikes of comment:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 const addReviewComment = async (req, res) => {
     const reviewId = req.params.rid;
     const newComment = req.body;
@@ -199,6 +242,7 @@ const MovieReviewsController = (app) => {
     app.put('/api/reviews/movies', updateReview);
     app.delete('/api/reviews/movies/:rid', deleteReview);
     app.put('/api/reviews/movies/like-dislike', updateLikeDislike)
+    app.put('/api/reviews/movies/like-dislike/comment', updateCommentLikeDislike)
     app.put('/api/reviews/movies/:rid/add-comment', addReviewComment)
 }
 export default MovieReviewsController;
