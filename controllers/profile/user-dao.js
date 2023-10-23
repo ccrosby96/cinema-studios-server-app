@@ -49,7 +49,6 @@ export const deleteFollowRelationship = async (relationshipId) => {
      }
 }
 
-
 export const createUser = async (user) =>
      await userModel.create(user);
 

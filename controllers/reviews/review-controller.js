@@ -66,27 +66,6 @@ const findReviewsByMovieId = async (req, res) => {
         res.status(500).json({ message: "Finding movie reviews by movieID failed" });
     }
 }
-const populateComments = async (comments) => {
-    // Ensure comments is an array
-    if (!Array.isArray(comments)) {
-        return comments;
-    }
-
-    // Map over each comment and populate its author field
-    const populatedComments = await Promise.all(comments.map(async (comment) => {
-        // Populate top-level author field
-        await comment.populate('author', ['username', 'profilePic']).execPopulate();
-
-        // Populate replies recursively
-        comment.replies = await populateComments(comment.replies);
-
-        return comment;
-    }));
-
-    return populatedComments;
-};
-
-
 
 const createReview = async (req, res) => {
     try {
@@ -228,17 +207,63 @@ const updateReview = async (req, res) => {
     res.json(status);
 
 }
+const getReviewByReviewId = async (req, res) => {
+    try {
+        const reviewId = req.params.rid;
+        const review = await reviewDao.findReviewByIdPopulated(reviewId);
+
+        if (review) {
+            res.json(review);
+        } else {
+            // Return a 404 Not Found status code if the review is not found
+            res.status(404).json({ error: 'Review not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching review:', error);
+        // Return a 500 Internal Server Error status code and an error message
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 const deleteReview = async (req, res) => {
-    const ReviewIdToDelete = req.params.rid;
-    const status = await reviewDao.deleteReview(ReviewIdToDelete);
-    res.json(status);
-}
+    try {
+        console.log('in deleteReview with rid', req.params.rid);
+        const currentUser = req.session["currentUser"];
+        if (!currentUser) {
+            return res.status(404).json({ error: 'User not authenticated' });
+        }
+
+        const reviewId = req.params.rid;
+        const reviewToDelete = await reviewDao.findReviewById(reviewId);
+        console.log('trying to delete review', reviewId);
+        console.log('review to be deleted: ', reviewToDelete);
+
+        if (!reviewToDelete) {
+            return res.status(404).json({ error: 'Review not found' });
+        }
+        if (currentUser._id.toString() === reviewToDelete.author.toString() || currentUser.role === 'admin') {
+            const status = await reviewDao.deleteReview(reviewId);
+            if (status) {
+                return res.json({ message: 'Review deleted successfully' });
+            }
+            return res.status(404).json({ error: 'Review not found' });
+        }
+
+        // User doesn't have permission
+        return res.status(403).json({ error: 'Permission denied' });
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 const MovieReviewsController = (app) => {
     app.post('/api/reviews/movies', createReview);
     app.get('/api/reviews/movies', findReviews);
     app.get('/api/reviews/movies/user/:uid', findReviewsByUser);
     app.get('/api/reviews/movies/user/username/:user',findReviewsByUsername)
     app.get('/api/reviews/movies/movie/:mid', findReviewsByMovieId)
+    app.get('/api/reviews/movies/:rid', getReviewByReviewId)
     app.put('/api/reviews/movies', updateReview);
     app.delete('/api/reviews/movies/:rid', deleteReview);
     app.put('/api/reviews/movies/like-dislike', updateLikeDislike)

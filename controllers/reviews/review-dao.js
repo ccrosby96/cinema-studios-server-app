@@ -6,6 +6,15 @@ export const findReviewsByMovieId = (movieId) => reviewModel.find({movieId: movi
 export const findReviewById = async (rid) => {
     return reviewModel.findOne({_id: rid});
 }
+export const findReviewByIdPopulated = async (rid) => {
+    return reviewModel.findOne({_id: rid}).populate({
+        path: 'comments',
+        populate: {
+            path: 'author replyTo',
+            select: ['username', 'profilePic']
+        }
+    }).populate('author', ['username', 'profilePic']);
+}
 export const findReviewsByUserId = (userId) => reviewModel.find({author: userId});
 export const findReviewsByUserIdBodyOnly = (userId) => reviewModel.find(
     { author: userId },
