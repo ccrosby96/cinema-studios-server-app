@@ -58,6 +58,10 @@ const schema = mongoose.Schema({
                 type: Date,
                 default: Date.now,
             },
+            dateAdded: {
+                type: Date,
+                default: Date.now,
+            },
         }
     ],
     role: {
