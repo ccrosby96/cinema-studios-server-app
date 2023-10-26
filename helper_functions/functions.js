@@ -45,13 +45,16 @@ export function generateUrl(filters) {
 
     // handle certification filters
     const certs = filters['ratings']
+    console.log(certs);
     const selectedRatings = Object.keys(certs).filter(rating => certs[rating]);
-    console.log(selectedRatings)
-    if (selectedRatings.length == 1) {
+    if (selectedRatings.length === 1) {
         url += '&certification=' + selectedRatings[0]
+        url += "&certification_country=US"
+
     } else if (selectedRatings.length >= 2) {
         const combinedString = selectedRatings.join('|');
         url += '&certification=' + combinedString
+        url += "&certification_country=US"
     }
     // handle year range filters
     const sYear = filters['years']['startYear']
@@ -60,11 +63,11 @@ export function generateUrl(filters) {
     const sNum = parseInt(sYear);
     const eNum = parseInt(eYear);
 
-    if (sNum >= 1900 && sNum <= 2023) {
+    if (sNum >= 1850 && sNum <= 2024) {
         url += '&primary_release_date.gte='
         url += sYear + '-01-01'
     }
-    if (eNum >= 1900 && eNum <= 2023) {
+    if (eNum >= 1850 && eNum <= 2024) {
         url += '&primary_release_date.lte='
         url += eYear + '-12-30'
     }
@@ -76,7 +79,7 @@ export function generateUrl(filters) {
     // handle genres
     const genres = filters['genre']
     const selectedGenres = Object.keys(genres).filter(rating => genres[rating]);
-    console.log(selectedGenres)
+
     if (selectedGenres.length == 1) {
         url += '&with_genres=' + genreMap[selectedGenres[0]]
     } else if (selectedGenres.length >= 2) {
@@ -84,13 +87,14 @@ export function generateUrl(filters) {
             return genreMap[g]});
 
         const combined = mappedArray.join(',')
-        console.log(combined);
+
         url += "&with_genres=" + combined
 
     }
     // handle language
     url += '&with_original_language=en'
     url += '&sort_by=popularity.desc'
+    console.log('generated url', url);
     return url
 }
 export function generateMultiSearchQueryUrl(query) {
