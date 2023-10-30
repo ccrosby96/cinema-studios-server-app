@@ -1,5 +1,7 @@
 import userModel from "./user-model.js";
 import followModel from "./follow-model.js";
+import movieRatingModel from "../movie-ratings/movie-rating-model.js";
+
 
 export const findFollowingListByUserId = async (userId, page = 1, pageSize = 30) => {
      const skip = (page-1) * pageSize

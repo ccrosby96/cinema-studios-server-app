@@ -9,6 +9,7 @@ import MultiSearchController from "./controllers/search/search-controller.js";
 import TvController from "./controllers/tv/tv-controller.js";
 import UsersController from "./controllers/profile/user-controller.js";
 import MovieReviewsController from "./controllers/reviews/review-controller.js";
+import MovieRatingController from "./controllers/movie-ratings/movie-rating-controller.js";
 import session from "express-session"
 
 const app = express()
@@ -34,6 +35,7 @@ MultiSearchController(app)
 TvController(app)
 UsersController(app)
 MovieReviewsController(app);
+MovieRatingController(app);
 // Connecting to MongoDB cloud hosted db
 mongoose.connect("mongodb+srv://crosbycalvin:Joeybob96@cluster0.sqc4syr.mongodb.net/cinema_studios");
 app.listen(4000)

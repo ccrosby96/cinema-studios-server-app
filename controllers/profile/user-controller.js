@@ -360,7 +360,18 @@ const followUser = async (req,res) => {
         return;
     }
     const relationship = req.body;
+    console.log('relationship in req for follow user', relationship);
+    //
     try {
+        // first check if relationship already exists
+        const lookupRelationship = await usersDao.checkForFollowRelationship(relationship.follower, relationship.following);
+        // this user is already following the person
+        if (lookupRelationship) {
+            console.log('follow relationship already exists')
+            res.json(lookupRelationship)
+            return
+        }
+        // create new relationship if follow relationship doesn't yet exist
         const  insertedRelationship = await usersDao.createFollowRelationship(relationship)
         res.json(insertedRelationship);
     }catch (error) {

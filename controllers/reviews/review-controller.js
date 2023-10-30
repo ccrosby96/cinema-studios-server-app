@@ -10,9 +10,7 @@ const findReviews = async (req, res) => {
 const findReviewsByUser = async (req, res) => {
     try {
         const userId = req.params.uid;
-        console.log("in findReviewsByUser, uid is ", userId);
         const reviews = await reviewDao.findReviewsByUserIdBodyOnly(userId)
-        console.log('reviews found are', reviews);
         res.json(reviews);
     } catch (error){
         console.error('Error finding reviews by user:', error);
@@ -23,16 +21,15 @@ const findReviewsByUsername = async (req,res) => {
     try {
         const username = req.params.user;
         // first check if a user with this username exists
-        console.log('username in findReviewsByUsername is ', username);
+
         const author = await userDao.findUserByUsername(username);
 
         if (!author) {
             res.status(500).json({ message: 'Could not find an author with that username'});
             return
         }
-        console.log("in findReviewsByUsername author object is", author);
+
         const userId = author._id;
-        console.log("in findReviewsByUsername, username is ", userId);
         // grab reviews by this author
         const reviews = await reviewDao.findReviewsByUserIdBodyOnly(userId)
         // in response object include username, avatar, and reviews for rendering
@@ -40,7 +37,6 @@ const findReviewsByUsername = async (req,res) => {
                         profilePic: author.profilePic,
                         reviews: reviews
                         }
-        console.log('reviews found are', reviews);
         res.json(data);
     } catch (error){
         console.error('Error finding reviews by user:', error);
