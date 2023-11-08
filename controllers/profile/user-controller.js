@@ -333,6 +333,66 @@ const getFollowersList = async (req,res) => {
         console.log(error)
     }
 }
+const getFollowersPageByUser = async (req,res) => {
+    try {
+        const username = req.params.username;
+        const page = req.params.page;
+
+        console.log('username and page number are ', username, page);
+
+        // lookup user
+        const user = await usersDao.findUserByUsername(username)
+
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+            console.log("User not found in db")
+            return;
+        }
+        const pageResults = await usersDao.findFollowersOfUserById(user._id,page);
+
+        const response = {
+            username: user.username,
+            profilePic: user.profilePic,
+
+            results: pageResults
+        }
+        console.log('response for getFollowersPageByUser', response);
+        res.json(response);
+
+    }catch (error) {
+        console.error(error)
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+const getFollowsPageByUser = async (req,res) => {
+    try {
+        const username = req.params.username;
+        const page = req.params.page;
+        console.log("called getFollowsPageByUser");
+        console.log('username and page number are ', username, page);
+
+        // lookup user
+        const user = await usersDao.findUserByUsername(username)
+
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+            console.log("User not found in db")
+            return;
+        }
+        const pageResults = await usersDao.findFollowingListByUserId(user._id, page);
+        const response = {
+            username: user.username,
+            profilePic: user.profilePic,
+
+            results: pageResults
+        }
+        console.log('response for getFollowsPageByUser', response);
+        res.json(response);
+    }catch (error) {
+        console.error(error)
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 const checkForFollowRelationship = async (req,res) => {
     try {
         const userId = req.params.userId;
@@ -348,6 +408,7 @@ const checkForFollowRelationship = async (req,res) => {
         }
     }catch(error) {
         console.log(error)
+
     }
 }
 // creating a follow relationship
@@ -425,9 +486,12 @@ const UsersController = (app) => {
     app.post('/api/users/add-to-favorites', addToFavorites);
     app.delete('/api/users/watchlist/:mid', deleteFromWatchlist)
     app.delete('/api/users/favorites/:mid', deleteFromFavorites)
+
     app.get('/api/users/:uid/followers', getFollowersList)
     app.get('/api/users/:uid/following', getUserFollowingList)
     app.get('/api/users/:userId/follows/:targetUserId', checkForFollowRelationship);
+    app.get('/api/users/:username/followers/:page', getFollowersPageByUser)
+    app.get('/api/users/:username/following/:page', getFollowsPageByUser)
     app.post('/api/users/follow',followUser)
     app.delete('/api/users/:userId/unfollow/:targetUserId',unfollowUser);
 }

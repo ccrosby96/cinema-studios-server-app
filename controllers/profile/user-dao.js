@@ -20,6 +20,7 @@ export const findFollowersOfUserById = async (userId, page = 1, pageSize = 30) =
          .limit(pageSize)
          .populate('follower', ['username', 'profilePic']);
 }
+
 export const getNumberofFollowersByUserId = async (userId) => {
      return followModel.countDocuments({following: userId});
 }
