@@ -336,10 +336,9 @@ const getFollowersList = async (req,res) => {
 const getFollowersPageByUser = async (req,res) => {
     try {
         const username = req.params.username;
-        const page = req.params.page;
+        const page = parseInt(req.params.page);
 
         console.log('username and page number are ', username, page);
-
         // lookup user
         const user = await usersDao.findUserByUsername(username)
 
@@ -349,11 +348,13 @@ const getFollowersPageByUser = async (req,res) => {
             return;
         }
         const pageResults = await usersDao.findFollowersOfUserById(user._id,page);
+        const queryResult = await usersDao.findFollowersListPageByUserId(user._id, page);
 
         const response = {
             username: user.username,
             profilePic: user.profilePic,
-
+            currentPage: page,
+            maxPage: queryResult.maxPage,
             results: pageResults
         }
         console.log('response for getFollowersPageByUser', response);
@@ -367,7 +368,7 @@ const getFollowersPageByUser = async (req,res) => {
 const getFollowsPageByUser = async (req,res) => {
     try {
         const username = req.params.username;
-        const page = req.params.page;
+        const page = parseInt(req.params.page);
         console.log("called getFollowsPageByUser");
         console.log('username and page number are ', username, page);
 
@@ -379,12 +380,14 @@ const getFollowsPageByUser = async (req,res) => {
             console.log("User not found in db")
             return;
         }
-        const pageResults = await usersDao.findFollowingListByUserId(user._id, page);
+        const queryResult = await usersDao.findFollowingListPageByUserId(user._id, page);
+
         const response = {
             username: user.username,
             profilePic: user.profilePic,
-
-            results: pageResults
+            currentPage: queryResult.currentPage,
+            maxPage: queryResult.maxPage,
+            results: queryResult.results
         }
         console.log('response for getFollowsPageByUser', response);
         res.json(response);

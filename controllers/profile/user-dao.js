@@ -11,6 +11,51 @@ export const findFollowingListByUserId = async (userId, page = 1, pageSize = 30)
          .limit(pageSize)
          .populate('following', ['username', 'profilePic']);
 }
+export const findFollowingListPageByUserId = async (userId, page = 1, pageSize = 30) => {
+     try {
+          const skip = (page - 1) * pageSize;
+          // Fetch the total count of documents that match the query
+          const totalFollowingCount = await followModel.countDocuments({ follower: userId });
+
+          // Calculate the total number of pages
+          const totalPages = Math.ceil(totalFollowingCount / pageSize);
+
+          // Fetch the paginated results
+          const paginatedResults = await followModel
+              .find({ follower: userId })
+              .skip(skip)
+              .limit(pageSize)
+              .populate('following', ['username', 'profilePic']);
+
+          return {maxPage: totalPages, results: paginatedResults, currentPage: page};
+     } catch (error) {
+          console.error("Error fetching paginated results:", error);
+          throw error; // Handle or propagate the error as needed
+     }
+};
+export const findFollowersListPageByUserId = async (userId, page = 1, pageSize = 30) => {
+     try {
+          const skip = (page - 1) * pageSize;
+          // Fetch the total count of documents that match the query
+          const totalFollowerCount = await followModel.countDocuments({ following: userId });
+
+          // Calculate the total number of pages
+          const totalPages = Math.ceil(totalFollowerCount / pageSize);
+
+          // Fetch the paginated results
+          const paginatedResults = await followModel
+              .find({ following: userId })
+              .skip(skip)
+              .limit(pageSize)
+              .populate('following', ['username', 'profilePic']);
+
+          return {maxPage: totalPages, results: paginatedResults, currentPage: page};
+     } catch (error) {
+          console.error("Error fetching paginated results:", error);
+          throw error; // Handle or propagate the error as needed
+     }
+}
+
 // get list of people following this user
 export const findFollowersOfUserById = async (userId, page = 1, pageSize = 30) => {
      const skip = (page - 1) * pageSize;
