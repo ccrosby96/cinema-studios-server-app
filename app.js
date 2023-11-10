@@ -10,7 +10,11 @@ import TvController from "./controllers/tv/tv-controller.js";
 import UsersController from "./controllers/profile/user-controller.js";
 import MovieReviewsController from "./controllers/reviews/review-controller.js";
 import MovieRatingController from "./controllers/movie-ratings/movie-rating-controller.js";
+import AiSearchController from "./controllers/openai-search/ai-search-controller.js";
 import session from "express-session"
+// configure dotenv
+import { config as configDotenv } from 'dotenv';
+configDotenv();
 
 const app = express()
 app.use(cors(
@@ -36,6 +40,7 @@ TvController(app)
 UsersController(app)
 MovieReviewsController(app);
 MovieRatingController(app);
+AiSearchController(app);
 // Connecting to MongoDB cloud hosted db
 mongoose.connect("mongodb+srv://crosbycalvin:Joeybob96@cluster0.sqc4syr.mongodb.net/cinema_studios");
 app.listen(4000)
