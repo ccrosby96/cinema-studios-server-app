@@ -4,6 +4,7 @@ import {extractTrailer} from "../../helper_functions/functions.js";
 
 const MovieDetailsController = (app) => {
     app.get('/api/movie/details/:uid', fetchMovieDetailsById)
+    app.get('/api/movie/details/title/:title', fetchMovieDetailsByTitle)
     app.get('/api/movie/cast/:mid', fetchMovieCastById)
     app.get('/api/movie/providers/:mid', fetchMovieProvidersById)
     app.get('/api/movie/trending', fetchTrendingMovies)
@@ -40,7 +41,6 @@ const fetchMovieTrailersById = async (req,res) => {
 
 const fetchMovieDetailsById = async (req, res) => {
     const MovieId = req.params.uid;
-    //const url = 'https://api.themoviedb.org/3/movie/' + MovieId +'language=en-US';
     const url = 'https://api.themoviedb.org/3/movie/'+ MovieId + '?append_to_response=release_dates%2Ccredits%2Crecommendations%2Cvideos&language=en-US';
     console.log(url)
     const options = {
@@ -60,6 +60,24 @@ const fetchMovieDetailsById = async (req, res) => {
         const data = await response.json();
         const trailers = extractTrailer(data)
         data.trailers = trailers
+        return res.status(200).json(data);
+    }catch (error) {
+        return res.status(500).json({error : error.message});
+
+    }
+}
+const fetchMovieDetailsByTitle = async (req,res) => {
+    const title = req.params.title;
+    const url = `https://api.themoviedb.org/3/search/movie?query=${title}&include_adult=false&language=en-US&page=1`
+
+    try {
+        const response = await fetch(url, options);
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch movie cast data")
+        }
+        const data = await response.json();
+
         return res.status(200).json(data);
     }catch (error) {
         return res.status(500).json({error : error.message});
