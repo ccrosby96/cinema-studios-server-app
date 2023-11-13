@@ -12,6 +12,7 @@ const AiSearchController = (app) => {
     app.post("/api/ai-search", aiSearch)
     app.post("/api/ai-search/chat", aiSearchConversation)
 }
+const prompt = `Your job is to help users find a movie to watch. They may ask for recommendations based on a certain genre or they may need your help remembering the name of a movie they are thinking of and will provide you with some details they remember from the movie. When you return movie suggestions, please wrap them in quotations followed by the year that the movie came out. Do not recommend more than ten movies in any given response.`;
 
 // POST request endpoint
 const aiSearch =  async (req, res) => {
@@ -41,6 +42,7 @@ const aiSearch =  async (req, res) => {
     }
 };
 
+
 const aiSearchConversation =  async (req, res) => {
     // getting prompt question from request
     console.log('called aiSearchConversation function')
@@ -51,12 +53,12 @@ const aiSearchConversation =  async (req, res) => {
         }
         // grab conversation history from post req
         const conversation = req.body.conversation;
-        const basePrompt = [{"role": "system", "content": "Your job is to help this user find the name of the movie they are thinking of. They are about to give you some details they remember. If you do come up with a movie title, please wrap it in quotation marks in your responding message"}]
+        const basePrompt = [{"role": "system", "content": prompt}]
         const combined = [...basePrompt, ...conversation];
         console.log("combined convo on backend", combined);
         // return the result
         const response = await openai.chat.completions.create({
-            model: 'gpt-3.5-turbo',
+            model: 'gpt-3.5-turbo-16k-0613',
             messages: combined,
         });
         console.log(response);
