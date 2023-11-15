@@ -1,3 +1,4 @@
+import Fuse from 'fuse.js'
 
 const genreMap = {
     "Action": "28",
@@ -138,4 +139,18 @@ export function isValidReview(review) {
         typeof review.body === "string"
     );
 }
+export function fuzzySearch  (results, query, threshold = 0.3, fieldNormWeight = 0.0) {
+    const options = {
+        keys: ['title'], // Specify the keys you want to search on
+        threshold: threshold, // how close we want it to be
+        fieldNormWeight: fieldNormWeight
+    };
+
+    const fuse = new Fuse(results, options);
+    const filteredResults = fuse.search(query);
+    // Extract the original items from the results
+    const matchedItems = filteredResults.map(result => result.item);
+    return matchedItems;
+};
+
 

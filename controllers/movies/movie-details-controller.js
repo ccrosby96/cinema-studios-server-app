@@ -1,5 +1,6 @@
 
 import fetch from "node-fetch";
+import {fuzzySearch} from "../../helper_functions/functions.js";
 import {extractTrailer} from "../../helper_functions/functions.js";
 
 const MovieDetailsController = (app) => {
@@ -82,13 +83,15 @@ const fetchMovieDetailsFromSuggestions = async (req,res) => {
 
                 if (title && releaseYear) {
                     const url = `https://api.themoviedb.org/3/search/movie?query=${title}&include_adult=false&language=en-US&primary_release_year=${releaseYear}&page=1`;
-                    console.log('generated url for title', title, url);
+                    console.log('generated url for title', title, url, releaseYear);
                     const response = await fetch(url, options);
                     const data = await response.json();
-                    console.log('individual results from suggestion title', title, data);
+
                     if (data){
-                        results = [...results, data.results];
-                        resultDict[title] = data.results;
+                        const filtered = fuzzySearch(data.results, title, 0.2,2.0);
+                        //console.log('filtered results', filtered);
+                        console.log('individual results number from suggestion title vs filtered', data.results.length, filtered.length);
+                        resultDict[title] = filtered;
                     }
                 }
             }catch (error){
