@@ -139,17 +139,33 @@ export function isValidReview(review) {
         typeof review.body === "string"
     );
 }
-export function fuzzySearch  (results, query, threshold = 0.3, fieldNormWeight = 0.0) {
+function compareYears (releaseYear, dataDate) {
+    try  {
+        const releaseNumber = parseInt(releaseYear);
+        const year = dataDate.split("-")[0];
+        const resultRelease = parseInt(year);
+        const dif = Math.abs(releaseNumber - resultRelease);
+        if (dif < 2){
+            return true
+        }
+        return false
+    }catch (error){
+        return true
+    }
+
+}
+export function fuzzySearch  (results, query,releaseYear, threshold = 0.3, fieldNormWeight = 0.0) {
     const options = {
         keys: ['title'], // Specify the keys you want to search on
         threshold: threshold, // how close we want it to be
         fieldNormWeight: fieldNormWeight
     };
-
     const fuse = new Fuse(results, options);
     const filteredResults = fuse.search(query);
+    // further filtering, removing duds (0 vote average) and we want release dates to approximately line up
+    const finalResults = filteredResults.filter(result => result.item.vote_average !== 0 && compareYears(releaseYear, result.item.release_date));
     // Extract the original items from the results
-    const matchedItems = filteredResults.map(result => result.item);
+    const matchedItems = finalResults.map((result) => result.item);
     return matchedItems;
 };
 

@@ -82,13 +82,14 @@ const fetchMovieDetailsFromSuggestions = async (req,res) => {
                 const releaseYear = suggestions[i].releaseYear;
 
                 if (title && releaseYear) {
-                    const url = `https://api.themoviedb.org/3/search/movie?query=${title}&include_adult=false&language=en-US&primary_release_year=${releaseYear}&page=1`;
+                    const url = `https://api.themoviedb.org/3/search/movie?query=${title}&include_adult=false&language=en-US&year=${releaseYear}&page=1`
+;
                     console.log('generated url for title', title, url, releaseYear);
                     const response = await fetch(url, options);
                     const data = await response.json();
 
                     if (data){
-                        const filtered = fuzzySearch(data.results, title, 0.2,2.0);
+                        const filtered = fuzzySearch(data.results, title,releaseYear, 0,2.0);
                         //console.log('filtered results', filtered);
                         console.log('individual results number from suggestion title vs filtered', data.results.length, filtered.length);
                         resultDict[title] = filtered;
