@@ -14,6 +14,7 @@ export const findReviewsByMovieIdPaginated = async (movieId, page = 1, pageSize 
         const paginatedResults = await reviewModel
             .find({movieId: movieId})
             .skip(skip)
+            .sort({likes: -1})
             .limit(pageSize)
             .populate({
                 path: 'comments',
