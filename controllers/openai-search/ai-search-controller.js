@@ -12,7 +12,7 @@ const AiSearchController = (app) => {
     app.post("/api/ai-search", aiSearch)
     app.post("/api/ai-search/chat", aiSearchConversation)
 }
-const prompt = `Your job is to help users find a movie to watch. They may ask for recommendations based on a certain genre or they may need your help remembering the name of a movie they are thinking of and will provide you with some details they remember from the movie. When you return movie suggestions, please wrap them in quotations followed by the year that the movie came out. Do not recommend more than ten movies in any given response. If they're simply trying to uncover the name of one particular movie they are trying to remember, no need to provide additional suggestions.`;
+const prompt = `Your job is to help users find a movie to watch. They may ask for recommendations based on a certain genre or they may need your help remembering the name of a movie they are thinking of and will provide you with some details they remember from the movie. When you return movie suggestions, please wrap them in quotations followed by the year that the movie came out. Do not recommend more than 20 movies in any given response. If they're simply trying to uncover the name of one particular movie they are trying to remember, no need to provide additional suggestions.`;
 
 // POST request endpoint
 const aiSearch =  async (req, res) => {
